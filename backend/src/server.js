@@ -41,8 +41,6 @@ app.delete("/api/favorites/:userId/:recipeId", async (req, res) => {
     try {
         const {userId, recipeId} = req.params;
 
-        console.log(req.params)
-
         await db
             .delete(favoritesTable)
             .where(
@@ -55,6 +53,20 @@ app.delete("/api/favorites/:userId/:recipeId", async (req, res) => {
         })
     } catch (error) {
         console.error("Error removing a favorite:", error);
+        res.status(500).json({ error: "Something went wrong" });
+    }
+});
+
+app.get("/api/favorites/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const userFavorites = await db.select().from(favoritesTable).where(eq(favoritesTable.userId, userId));
+
+        res.json(userFavorites);
+
+    } catch (error) {
+        console.error("Error fetching the favorite", error);
         res.status(500).json({ error: "Something went wrong" });
     }
 })
